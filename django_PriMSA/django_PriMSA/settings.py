@@ -27,10 +27,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+#template
+TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
 # Application definition
 
 INSTALLED_APPS = [
+    'primsa',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
