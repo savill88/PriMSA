@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-
 <html>
 <head>
     <script src="/static/jquery/dist/jquery.js"></script>
@@ -7,6 +5,126 @@
     <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap-theme.min.css">
 </head>
-<body>
+<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+          <div class="navbar-header page-scroll">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand page-scroll" href="#page-top">PriMSA</a>
+          </div>
+
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse navbar-ex1-collapse">
+              <ul class="nav navbar-nav">
+                  <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                  <li class="hidden">
+                      <a class="page-scroll" href="#page-top"></a>
+                  </li>
+                  <li>
+                      <a class="page-scroll" href="#about">About</a>
+                  </li>
+                  <li>
+                      <a class="page-scroll" href="#search">Search</a>
+                  </li>
+                  <li>
+                      <a class="page-scroll" href="#contact">Contact</a>
+                  </li>
+              </ul>
+          </div>
+          <!-- /.navbar-collapse -->
+      </div>
+      <!-- /.container -->
+  </nav>
+
+  <br>
+  <br>
+  <br>
+
+
+
+
+
+  <section id="search">
+    <style>
+    .form-signin {
+      max-width: 550px;
+      padding: 15px;
+      margin: 0 auto;
+      }
+    </style>
+    <div class="container">
+          <div class="row">
+              <div class="col-lg-12">
+                  <h1>Search Related Sequences in NCBI</h1>
+                  <p><strong>Please Enter the Required Information:</strong></p>
+              </div>
+          </div>
+    </div>
+
+
+<!-- contains the Form using which the user can access NCBI database-->
+  <div class="col-lg-12">
+
+      <div class="container text-center">
+          <form class="form-signin" id="login_form" method="post" action="retrieve/">
+
+            {% csrf_token %}
+
+
+            <br>
+            <input type="text" name="userEmail" class="form-control" placeholder="Email Address, e.g. primsa@domain.com" value="" required autofocus>
+            <br>
+            <input type="text" name="geneName" class="form-control" placeholder="Gene Name, e.g. IFNG" value="" required autofocus>
+            <br>
+            <input type="text" name="orgGenus" class="form-control" placeholder="Organism Name, e.g. Calendula " value="" required autofocus>
+            <br>
+            <input type="text" name="orgKingdom" class="form-control" placeholder="Organism Kingdom, e.g. Plants/Animals/.. " value="" required autofocus>
+            <br>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Get Related Sequences</button>
+          </form>
+      </div>
+
+   </div>
+  <!--end of Form-->
+  <hr>
+
+    <div class="container">
+          <div class="row">
+              <div class="col-lg-12">
+                  <h1>Already HAVE Sequences for Multiple Sequence Alignment</h1>
+                  <p><strong>Please Copy the Sequences in the box below:</strong></p>
+
+
+              </div>
+          </div>
+    </div>
+
+ <!-- contains the Form using which the user can input multiple sequences-->
+  <div class="col-lg-12 ">
+
+
+      <form  id="fastaSeq" class= "form-signin" method="post" action="msa/">
+          {% csrf_token %}
+        <div class="container">
+          <textarea rows="12" cols="60"  name="fastaSeqs" placeholder="Enter your Multiple FASTA Sequences Here" required autofocus></textarea>
+
+        </div>
+        <br>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Fetch me Primers</button>
+     </form>
+   </div>
+</section>
+
+
+
+
+
 </body>
 </html>
