@@ -65,3 +65,10 @@ virtualenv==15.0.1
 Werkzeug==0.10.4
 wrapt==1.10.8
 xmltodict==0.10.2
+dj-database-url==0.3.0
+django-postgrespool==0.3.0
+gunicorn==19.3.0
+psycopg2==2.6
+django-toolbelt==0.0.1
+static3==0.5.1
+whitenoise==2.0.3

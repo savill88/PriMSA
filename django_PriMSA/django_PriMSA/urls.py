@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import include,url
 from django.contrib import admin
+from primsa import views
 
 urlpatterns = [
-    
+    url(r'^$',views.intro, name='intro'), #renders the intro page containing information about the app
     url(r'^primsa/', include('primsa.urls')),
-    url(r'^admin/', admin.site.urls),
+    url(r'^admin/', admin.site.urls), #built into the framework
 ]
