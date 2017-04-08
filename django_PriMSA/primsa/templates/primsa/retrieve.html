@@ -8,32 +8,39 @@
 <body>
 <h1 class="text-center"> PriMSA </h1>
   <div class="col-lg-12">
-    
+
       <div class="table-responsive">
           <table class="table table-bordered table-hover table-striped tablesorter">
               <thead>
               <tr>
+                <th class="header">  <i class="icon-sort"></i></th>
                 <th class="header"> Sequence ID <i class="icon-sort"></i></th>
                 <th class="header"> Sequence (1-20)<i class="icon-sort"></i></th>
                 <th class="header"> Sequence Length <i class="icon-sort"></i></th>
+                <th class="header"> Sequence Description <i class="icon-sort"></i></th>
                 <!--<th class="header"> Sequence <i class="icon-sort"></i></th>-->
               <tr>
           </thead>
-          <tbody>
-
-
-            {% for key, values in data.items %}
-            <tr>
-                <td>{{key}}</td>
-                {% for v in values %}
-                  <td>{{v}}</td>
+            <form method="POST" action="clustal/">
+            {% csrf_token %}
+            <tbody>
+                {% for key, values in data.items %}
+                <tr>
+                   <td><input type="checkbox" value= {{key}} name= {{key}} checked="checked"></td>
+                    <td>{{key}}</td>
+                    {% for v in values %}
+                      <td>{{v}}</td>
+                    {% endfor %}
+                </tr>
                 {% endfor %}
-            </tr>
-            {% endfor %}
 
 
-          </tbody>
-          </table>
+            </tbody>
+
+          <button class="btn btn-lg btn-primary btn-block" href="clustal\" >Perform Multiple Sequence Alignment</button>
+         </form>
+
+        </table>
       </div>
     </div>
 </body>

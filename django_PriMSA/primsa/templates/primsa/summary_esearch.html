@@ -2,6 +2,7 @@
 <head>
     <script src="/static/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="/static/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="//cdn.bio.sh/msa/latest/msa.min.gz.js"></script>
     <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap-theme.min.css">
 </head>
@@ -15,7 +16,7 @@
               <tr>
                 <th class="header"> Property <i class="icon-sort"></i></th>
                 <th class="header"> Value<i class="icon-sort"></i></th>
-                
+
               <tr>
           </thead>
           <tbody>
@@ -28,10 +29,20 @@
 
             </tr>
             {% endfor %}
-
-
           </tbody>
           </table>
+          <hr>
+          <form method="POST" action='download/'>
+            {% csrf_token %}
+              <input type="hidden" value={{data.Count}} name="Count">
+              <input type="hidden" value={{data.WebEnv}} name="WebEnv">
+              <input type="hidden" value={{data.QueryKey}} name="QueryKey">
+              <button class="btn btn-lg btn-primary btn-block" href="download/" >Download the Sequences</button>
+          </form>
+
+
+
+
       </div>
     </div>
 </body>
