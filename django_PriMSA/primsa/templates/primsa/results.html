@@ -32,13 +32,14 @@
           </tbody>
           </table>
           <hr>
-          <div id='yourDiv'></div>
+
+          <div id='msa_viewer'></div>
 
 
           <script>
           {% load static %}
           var opts = {
-            el: document.getElementById("yourDiv"),
+            el: document.getElementById("msa_viewer"),
             vis: {
               conserv: false,
               overviewbox: false
@@ -54,6 +55,7 @@
           });
           </script>
 
+          <hr>
           <div>
               <img src="/static/images/phylotree" class= "img-fluid" alt="phylogenetic tree"/>
           </div>
