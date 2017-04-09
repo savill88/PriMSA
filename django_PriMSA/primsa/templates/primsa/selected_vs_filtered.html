@@ -34,13 +34,29 @@
           <hr>
           <div id='yourDiv'></div>
 
+
           <script>
-            var opts = {
-              el: yourDiv,
-              importURL: "/primsa/templates/primsa/0LL63WKLA0LAM64.clustal",
-            };
-            var m = msa(opts);
+          {% load static %}
+          var opts = {
+            el: document.getElementById("yourDiv"),
+            vis: {
+              conserv: false,
+              overviewbox: false
+            },
+            // smaller menu for JSBin
+            menu: "small",
+            bootstrapMenu: true
+          };
+
+          var m = new msa.msa(opts);
+          m.u.file.importURL("{% static "clustalpro/jalv_example.clustal" %}", function(){
+            m.render();
+          });
           </script>
+
+
+
+          <img src="/static/images/tree" class= "img-fluid" alt="phylogenetic tree"/>
 
 
 

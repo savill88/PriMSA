@@ -28,7 +28,7 @@ def countIndBase(col, numRows):
 
 #Takes FILENAME as INPUT and performs MSA using CLUSTALW through COMMANDLINE
 def multipleSeqAlignment(fileName):
-    cline=ClustalwCommandline("clustalw", infile=fileName)
+    cline=ClustalwCommandline("clustalw", infile=fileName, output="fasta")
     cline()
 
 #END of ACCESSORIES FUNCTIONS
@@ -214,6 +214,16 @@ def msa(request):
 
         results=bindings.designPrimers(seq_args, global_args)
 
+        treeNewick= Phylo.read(treeFileName, "newick")
+        #Phylo.draw_ascii(treeNewick)
+        treeNewick.rooted=True
+        #note sure what this does
+        treeNewick.ladderize()
+        Phylo.draw(treeNewick, do_show=False)
+        pylab.axis('off')
+        pylab.savefig("/home/savill88/Desktop/senior-project/PriMSA/django_PriMSA/primsa/static/images/tree", format='png', bbox_inches='tight', dpi=300)
+
+
         #results= bindings.runP3Design()
 
         return render(request,'primsa/selected_vs_filtered.html', {'data':results})
@@ -226,7 +236,7 @@ def msa(request):
         treeNewick.ladderize()
         Phylo.draw(treeNewick, do_show=False)
         pylab.axis('off')
-        pylab.savefig(treeImagePath, format='jpg', bbox_inches='tight', dpi=300)
+        pylab.savefig("/home/savill88/Desktop/senior-project/PriMSA/django_PriMSA/primsa/static/images/tree", format='png', bbox_inches='tight', dpi=300)
 
         return HttpResponse('Whatever')
         '''
