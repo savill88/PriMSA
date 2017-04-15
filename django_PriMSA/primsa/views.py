@@ -56,7 +56,7 @@ def tree_draw_newick():
         consensusSeq=consensusSeq + countIndBase(column, number_row)
     #return HttpResponse(consensusSeq)
     seq_args={'SEQUENCE_ID':'CONSENSUS_SEQ', 'SEQUENCE_TEMPLATE': consensusSeq}
-    global_args= {'PRIMER_OPT_SIZE': 20,'PRIMER_PICK_INTERNAL_OLIGO': 1,'PRIMER_PRODUCT_SIZE_RANGE': [[75,100],[100,125],[125,150],[150,175],[175,200],[200,225]],}
+    global_args= {'PRIMER_OPT_SIZE': 20,'PRIMER_PICK_INTERNAL_OLIGO': 1,'PRIMER_PRODUCT_SIZE_RANGE': [[175,200],[200,225]],}
 
 
     results=bindings.designPrimers(seq_args, global_args)
@@ -232,6 +232,13 @@ def msa(request):
         write_handle=open("input.fasta",'w')
         write_handle.write(request.POST.get('fastaSeqs'))
         write_handle.close()
+
+        handle_open=open("input.fasta",'r')
+        for seq_record in SeqIO.parse(handle_open,"fasta"):
+            split_string= seq_record.description.split()
+            first_four= " ".join(split_string[0:4])
+            tree_map[seq_record.id]= first_four
+
         results=tree_draw_newick()
 
         return render(request,'primsa/results.html', {'data':results})
