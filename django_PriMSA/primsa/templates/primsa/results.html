@@ -8,7 +8,21 @@
 </head>
 <body>
 <h1 class="text-center"> PriMSA </h1>
+
+<h2 class="text-center"> Results</h2>
+
+
+
+  <hr>
   <div class="col-lg-12">
+
+    <div>
+        <P> Below is the <b> consensus sequence <b> used </p>
+
+        <img src="/static/images/primer.png" class= "img-fluid" alt="primer"/>
+    </div>
+    
+
 
       <div class="table-responsive">
           <table class="table table-bordered table-hover table-striped tablesorter">
@@ -31,15 +45,15 @@
             {% endfor %}
           </tbody>
           </table>
+        </div>
           <hr>
 
-          <div id='msa_viewer'></div>
-
+          <div id='msa_viewer_protein'></div>
 
           <script>
           {% load static %}
           var opts = {
-            el: document.getElementById("msa_viewer"),
+            el: document.getElementById("msa_viewer_protein"),
             vis: {
               conserv: false,
               overviewbox: false
@@ -50,16 +64,24 @@
           };
 
           var m = new msa.msa(opts);
-          m.u.file.importURL("{% static "clustalpro/input.fasta" %}", function(){
+          m.u.file.importURL("{% static "clustalpro/parsed_protein_alignment.fasta" %}", function(){
             m.render();
           });
           </script>
 
           <hr>
+
           <div>
               <img src="/static/images/phylotree" class= "img-fluid" alt="phylogenetic tree"/>
           </div>
 
+
+          <hr>
+          <div>
+              <img src="/static/images/statistics.png" class= "img-fluid" alt="statistics"/>
+          </div>
+
+          <hr>
 
 
       </div>
