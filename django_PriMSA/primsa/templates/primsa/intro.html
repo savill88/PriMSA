@@ -13,20 +13,101 @@
 
 <style type="text/css">
     .jumbotron {
-        height: 100vh;
+
     }
 </style>
 
 
   <div class='container-fluid'>
     <div class="jumbotron">
-      <h1 class="display-3">Welcome to PriMSA</h1>
-      <p class="lead">The online tool is built for users to design primers for genes with NO available sequences for Polymerase Chain Reaction (PCR). The tool aligns multiple homologous mRNA sequences using CLUSTALW, detects regions of conservation, and design primers using the consensus sequences from the alignment. </p>
-      <hr class="my-4">
-      <p>DESCRIPTION ABOUT INPUT, OUTPUT</p>
-      <p class="lead">
+      <h1 class="display-3 text-center">Welcome to PriMSA</h1>
+      <hr>
+      <p class="lead text-center">
         <a class="btn btn-primary btn-lg"  href='primsa/' role="button">Take Me to PriMSA</a>
       </p>
+      <hr>
+      <br>
+
+      <p class="lead text-primary text-center"> Through the use of Multiple Sequence Alignment (MSA) of homologous mRNA sequences for the <b>gene</b> of interest using ClustalW, PriMSA helps design primers for
+        Polymerase Chain Reaction (PCR). The user can either choose to query the NCBI database for the sequences or input their own in FASTA format.
+      </p>
+
+      <hr>
+      <p class='text-success text-center'> There are five different categories of output for PriMSA. A brief description for each output is included below.</p>
+
+      <!-- Page Content -->
+   <div class="container">
+
+
+
+                   <div class="col-sm-4 col-lg-4 col-md-4">
+                       <div class="thumbnail">
+                           <img  src="/static/images/phylotree.png" alt="">
+                           <div class="caption">
+
+                               <h4 class='text-info'>Table of Results</h4>
+                               <p class="text-success">Contains the results from Primer3 in a tabular format. </p>
+                           </div>
+
+                       </div>
+                   </div>
+                   <div class="col-sm-4 col-lg-4 col-md-4">
+                       <div class="thumbnail">
+                           <img src="/static/images/t_primer.png" alt="">
+                           <div class="caption">
+
+                                <h4 class='text-info'>Consensus Sequence</h4>
+                               <p class="text-success">Pictorial Representation of the alignment of one sets of primers with the consensus
+                                 sequence from Primer3</p>
+                           </div>
+
+                       </div>
+                   </div>
+                   <div class="col-sm-4 col-lg-4 col-md-4">
+                       <div class="thumbnail">
+                           <img src="/static/images/t_phylotree.png" alt="">
+                           <div class="caption">
+
+                                <h4 class='text-info'>Multiple Sequence Alignment Viewer </h4>
+                               <p class="text-success">Integrates MSAViewer to show the alignment of protein sequences translated from the
+                               mRNA sequences</p>
+                           </div>
+
+                       </div>
+                   </div>
+                   <div class="col-sm-4 col-lg-4 col-md-4">
+                       <div class="thumbnail">
+                           <img src="/static/images/t_phylotree.png" alt="">
+                           <div class="caption">
+
+                                <h4 class='text-info'>Phylogenetic Tree</h4>
+                               <p class="text-success">A Newick tree of the protein sequences aligned</p>
+                           </div>
+
+                       </div>
+                   </div>
+                   <div class="col-sm-4 col-lg-4 col-md-4">
+                       <div class="thumbnail">
+                           <img src="/static/images/t_statistics.png" alt="">
+                           <div class="caption">
+
+                              <h4 class='text-info'>Graphs</h4>
+                               <p class="text-success">Graphical Representation showing the distribution of nucleotide bases in the
+                               the alignment.</p>
+                           </div>
+
+                       </div>
+                   </div>
+
+
+
+
+
+
+
+
+
+   <!-- /.container -->
     </div>
   </div>
 

@@ -311,7 +311,10 @@ def tree_draw_newick():
             else:
                  consensus_sequence=consensus_sequence + tuple_to_base[index_highest_freq]
         else:
-            consensus_sequence=consensus_sequence + 'N'
+            if index_highest_freq==4:
+                consensus_sequence=consensus_sequence + 'N'
+            else:
+                 consensus_sequence=consensus_sequence + tuple_to_base[index_highest_freq]
 
         max_each_column.append(highest_frequency)
 
@@ -337,34 +340,35 @@ def tree_draw_newick():
     y_dash= [x[4] for x in tuple_list]
 
     plt.figure(figsize=(15,15))
-
+    '''
     plt.subplot(7,1,1)
     plt.plot(x_val, y_A,'r',x_val, y_T,'b',x_val, y_C,'g',x_val, y_G,'y',x_val, y_dash,'m')
     plt.title("Graph showing the distribution of the bases in the Multiple Sequence Alignment")
     plt.ylabel("ATCG- Distribution")
-
-    plt.subplot(7,1,2)
+    '''
+    plt.subplot(6,1,1)
+    plt.title("Graph showing the distribution of the bases in the Multiple Sequence Alignment")
     plt.plot(x_val, y_A,'r')
     plt.ylabel("As")
 
-    plt.subplot(7,1,3)
+    plt.subplot(6,1,2)
     plt.plot(x_val, y_T,'b')
     plt.ylabel("Ts")
 
-    plt.subplot(7,1,4)
+    plt.subplot(6,1,3)
     plt.plot(x_val, y_C,'g')
     plt.ylabel(" Cs")
 
-    plt.subplot(7,1,5)
+    plt.subplot(6,1,4)
     plt.plot(x_val, y_G,'y')
     plt.ylabel("Gs")
 
-    plt.subplot(7,1,6)
+    plt.subplot(6,1,5)
     plt.plot(x_val, y_dash,'m')
     plt.ylabel("- Count ")
 
 
-    plt.subplot(7,1,7)
+    plt.subplot(6,1,6)
     plt.plot(x_val, max_each_column,'k', x_val, half_line_list, 'c')
     plt.ylabel("Highest Frequency")
 
@@ -382,20 +386,34 @@ def tree_draw_newick():
     results=bindings.designPrimers(seq_args, global_args)
 
 
-    primer_left=[]
-    primer_left_sequence=""
-    primer_right=[]
-    primer_right_sequence=""
+    parsed_results={}
+
+    primer_left={}
+
+    primer_right={}
+
+    primer_left_index=[]
+    primer_right_index=[]
+    primer_pair={}
     for key in sorted(results.iterkeys()):
         print "%s: %s" % (key, results[key])
+        if 'PRIMER_LEFT' in key:
+            primer_left[key]=results[key]
+        if 'PRIMER_RIGHT' in key:
+            primer_right[key]=results[key]
+        if 'PRIMER_PAIR' in key:
+            primer_pair[key]=results[key]
         if key=="PRIMER_LEFT_0":
-            primer_left.append(results[key])
-        if key=="PRIMER_LEFT_0_SEQUENCE":
-            primer_left_sequence=results[key]
+            primer_left_index.append(results[key])
         if key=="PRIMER_RIGHT_0":
-            primer_right.append(results[key])
-        if key=="PRIMER_RIGHT_0_SEQUENCE":
-            primer_right_sequence=results[key]
+            primer_right_index.append(results[key])
+
+
+    parsed_results['primer_left']= primer_left
+    parsed_results['primer_right']= primer_right
+    parsed_results['primer_pair']= primer_pair
+
+
 
 
 
@@ -407,20 +425,29 @@ def tree_draw_newick():
     treeNewick.ladderize()
     Phylo.draw(treeNewick, do_show=False, label_func= node_name)
     pylab.axis('on')
-    pylab.savefig("/home/savill88/Desktop/senior-project/PriMSA/django_PriMSA/primsa/static/images/phylotree", format='png', bbox_inches='tight', dpi=150)
+    pylab.savefig("/home/savill88/Desktop/senior-project/PriMSA/django_PriMSA/primsa/static/images/phylotree.png", dpi=300)
 
     #draw the primer alignment as output
-    primer_right_start_index= primer_right[0][0] -primer_right[0][1] + 1
-    primer_right_end_index= primer_right[0][0] + 1
-    primer_left_start_index=primer_left[0][0]
-    primer_left_end_index=primer_left_start_index+primer_left[0][1]
+    primer_right_start_index= primer_right_index[0][0] -primer_right_index[0][1] + 1
+    primer_right_end_index= primer_right_index[0][0] + 1
+    primer_left_start_index=primer_left_index[0][0]
+    primer_left_end_index=primer_left_start_index+primer_left_index[0][1]
 
     primer_left_space=" "* ((primer_left_start_index%100)+2)
     #print primer_left_space
-    primer_left_line= primer_left_space + '>' * primer_left[0][1] +"\n"
+    if (primer_left_end_index% 100) < primer_left_index[0][1]:
+        primer_left_line= primer_left_space + '>' * (primer_left_index[0][1] - (primer_left_end_index%100))+"\n\n"
+    else:
+        primer_left_line= primer_left_space + '>' * primer_left_index[0][1] +"\n\n"
+
     primer_right_space= " " * ((primer_right_start_index%100) + 2)
-    #print primer_right_space
-    primer_right_line=primer_right_space+'<' * primer_right[0][1] + "\n"
+
+
+    if (primer_right_end_index% 100) < primer_right_index[0][1]:
+        primer_right_line= primer_right_space + '>' * (primer_right_index[0][1] - (primer_right_end_index%100))+"\n\n"
+    else:
+        primer_right_line= primer_right_space + '>' * primer_right_index[0][1] +"\n\n"
+
 
 
     with_new_line="\n"
@@ -452,7 +479,7 @@ def tree_draw_newick():
 
 
 
-    return results
+    return parsed_results
 
 
 
@@ -587,12 +614,6 @@ def clustal(request):
 
     #testing for changing the node label
     #return render(request,'primsa/summary_esearch.html', {'data':tree_map})
-
-
-
-
-
-
 
 
 

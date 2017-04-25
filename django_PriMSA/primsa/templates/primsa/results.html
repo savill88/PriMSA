@@ -7,22 +7,58 @@
     <link rel="stylesheet" href="/static/bootstrap/dist/css/bootstrap-theme.min.css">
 </head>
 <body>
-<h1 class="text-center"> PriMSA </h1>
+  <!-- Navigation -->
+  <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+          <div class="navbar-header page-scroll">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand page-scroll" href="http://127.0.0.1:8000/">PriMSA</a>
+          </div>
 
-<h2 class="text-center"> Results</h2>
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse navbar-ex1-collapse">
+              <ul class="nav navbar-nav">
+                  <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                  <li class="hidden">
+                      <a class="page-scroll" href="http://127.0.0.1:8000/primsa/"></a>
+                  </li>
+                  <li>
+                      <a class="page-scroll" href="http://127.0.0.1:8000/">About</a>
+                  </li>
+                  <li>
+                      <a class="page-scroll" href="http://127.0.0.1:8000/primsa/">Search</a>
+                  </li>
+                  <li>
+                      <a class="page-scroll" href="#contact">Contact</a>
+                  </li>
+              </ul>
+          </div>
+          <!-- /.navbar-collapse -->
+      </div>
+      <!-- /.container -->
+  </nav>
+
+  <br>
+  <br>
+  <br>
+
+
 
 
 
   <hr>
-  <div class="col-lg-12">
+  <div class="col-lg-12 container-fluid">
 
     <div>
         <P> Below is the <b> consensus sequence <b> used </p>
 
         <img src="/static/images/primer.png" class= "img-fluid" alt="primer"/>
     </div>
-    
-
 
       <div class="table-responsive">
           <table class="table table-bordered table-hover table-striped tablesorter">
@@ -64,7 +100,7 @@
           };
 
           var m = new msa.msa(opts);
-          m.u.file.importURL("{% static "clustalpro/parsed_protein_alignment.fasta" %}", function(){
+          m.u.file.importURL("{% static "clustalpro/overlapped_mRNA.fasta" %}", function(){
             m.render();
           });
           </script>
@@ -72,7 +108,7 @@
           <hr>
 
           <div>
-              <img src="/static/images/phylotree" class= "img-fluid" alt="phylogenetic tree"/>
+              <img src="/static/images/phylotree.png" class= "img-fluid" alt="phylogenetic tree"/>
           </div>
 
 
@@ -82,7 +118,6 @@
           </div>
 
           <hr>
-
 
       </div>
     </div>
