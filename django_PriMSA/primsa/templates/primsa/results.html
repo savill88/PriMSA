@@ -47,7 +47,7 @@
   <br>
   <br>
 
-
+  <h1 class="text-primary text-center"> Here are your Results</h1>
 
 
 
@@ -55,41 +55,67 @@
   <div class="col-lg-12 container-fluid">
 
     <div>
-        <P> Below is the <b> consensus sequence <b> used </p>
+        <p> <b> CONSENSUS SEQUENCE <b> <br> <br><b>Confidence Score: {{data.confidence_score}}</b> {{confidence_score}} <br> <b> ">>>>>": </b>Left primer
+        <br> <b>"<<<<<" :</b> Right Primer <br>  </p>
 
-        <img src="/static/images/primer.png" class= "img-fluid" alt="primer"/>
+
+        <img src="/static/images/primer.png" class= "img-fluid center-block" alt="primer_image"/>
     </div>
+    <hr>
+    <div>
+        <img src="/static/images/frequency.png" class= "img-fluid center-block" alt="primer_image"/>
+    </div>
+
+    <br>
+    <br>
+    <hr>
+    <br>
+    <br>
 
       <div class="table-responsive">
           <table class="table table-bordered table-hover table-striped tablesorter">
               <thead>
-              <tr>
-                <th class="header"> Property <i class="icon-sort"></i></th>
-                <th class="header"> Value<i class="icon-sort"></i></th>
 
               <tr>
+                <th class="header"> Primer <i class="icon-sort"></i></th>
+                <th class="header"> Sequence<i class="icon-sort"></i></th>
+                <th class="header"> Melting Temperature<i class="icon-sort"></i></th>
+                <th class="header"> GC Percent (%)<i class="icon-sort"></i></th>
+                <th class="header"> End Stability (Delta G)<i class="icon-sort"></i></th>
+                <th class="header"> Location Consensus Sequence<i class="icon-sort"></i></th>
+
+              <tr>
+
           </thead>
           <tbody>
 
 
             {% for key, value in data.items %}
             <tr>
+                {% if key == 'Left' or key=='Right' %}
                 <td>{{key}}</td>
-                <td>{{value}}</td>
+                <td>{{value.0}}</td>
+                <td>{{value.1}}</td>
+                <td>{{value.2}}</td>
+                <td>{{value.3}}</td>
+                <td>{{value.4}}</td>
+                {% endif %}
 
             </tr>
             {% endfor %}
           </tbody>
           </table>
+          <br><br>
+          <p class="text-primary"> <b>The product size of the primer pair is: </b> data.product_size
         </div>
           <hr>
 
-          <div id='msa_viewer_protein'></div>
+          <div id='msa_viewer_mRNA'></div>
 
           <script>
           {% load static %}
           var opts = {
-            el: document.getElementById("msa_viewer_protein"),
+            el: document.getElementById("msa_viewer_mRNA"),
             vis: {
               conserv: false,
               overviewbox: false
@@ -108,13 +134,13 @@
           <hr>
 
           <div>
-              <img src="/static/images/phylotree.png" class= "img-fluid" alt="phylogenetic tree"/>
+              <img src="/static/images/phylotree.png" class= "img-fluid center-block" alt="phylogenetic tree"/>
           </div>
 
 
           <hr>
           <div>
-              <img src="/static/images/statistics.png" class= "img-fluid" alt="statistics"/>
+              <img src="/static/images/statistics.png" class= "img-fluid center-block" alt="statistics"/>
           </div>
 
           <hr>

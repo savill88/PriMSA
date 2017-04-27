@@ -18,6 +18,8 @@ import matplotlib.pyplot as plt
 #for creating images with text
 from PIL import Image, ImageDraw, ImageFont
 
+import collections
+
 import pylab
 from primer3 import bindings
 
@@ -42,11 +44,154 @@ codon_table = {
 }
 
 
+'''
+Scoring Function Based on the wobble position
+##IDEA: Return higher scores for lower conservation as CONFIDENCE SCORE is INVERSELY proportional to SUM Returned
+###
+Base case: 3rd position does not matter meaning codes for same aa: Score is given as 1
+            3rd position leads to 2 different aa: Base score as (1 + 1)= 2 with addition penalty for each aa:: [same groups: 0.25, similar chemical:0.5, different: 1]
+            If stop codon, penalty of 3 is added
+###
+1. Lowest penalty is received when the base at the third position does not matter
+TT: F, L (Both Hydrophobic):: 2 + 0.25 + 0.25 = 2.50 (0.25  penalty, same chemical)
+TC: S  :: 1
+TA: Y, Stop (2) ::  (1+1 + 1 + 3)= 6 Stop codon is [3] times the penalty and Y is drastically different so plus 1
+TG: C (Polar), W (Hydrophobic), Stop(1) :: (1 + 1) + (1 + 1) + (1+ 3) = 8 [1 penalty added to each aa due to the differences and 3 for being a stop codon]
+CT: L :: 1
+CC: P :: 1
+CA: H (Electrically Charged), Q (Polar) :: (1 + 0.5) + (1 + 0.5) = 3 [0.5 penalty is added to each aa as they both have charge and are not drastically different]
+CG: R :: 1
+AT: I (Hydrophobic), M (Polar) :: (1 + 1) + (1 + 1)= 4
+AC: T :: 1
+AA: N (Polar), K (Electrically Charged Basic) :: 1 + 0.5 + 1 + 0.5 = 3
+AG: S(Polar), R(Electrically Charged) :: 1 + 0.5 + 1 + 0.5 = 3
+GT: V :: 1
+GC: A :: 1
+GA: D (Electrically Charged), E (Electrically Charged) :: 1+0.25 + 1 + 0.25= 2.5
+GG: G :: 1
+'''
+
+#scores the conservation in the third position
+codon_table_12={
+'TT':2.50, 'TC':1,'TA': 6,'TG':8, 'CT': 1, 'CC': 1, 'CA':3,'CG': 1, 'AT': 4, 'AC': 1, 'AA': 3, 'AG': 3, 'GT': 1,
+'GC':1, 'GA': 2.5, 'GG': 1
+}
+
+
+'''
+Scoring Function Based on the wobble position
+##IDEA: Return higher scores for lower conservation as CONFIDENCE SCORE is INVERSELY proportional to SUM Returned
+###
+Base case: 3rd position does not matter meaning codes for same aa: Score is given as 1
+            3rd position leads to 2 different aa: Base score as (1 + 1)= 2 with addition penalty for each aa:: [same groups: 0.25, similar chemical:0.5, different: 1]
+            If stop codon, penalty of 3 is added
+###
+1. Lowest penalty is received when the base at the third position does not matter
+TT: F, S, Y, C :: (1 + 0.25) + (1 + 0.25) + (1 + 0.25) + (1 + 0.25) = 6
+TC: F, S, Y, C :: (1 + 0.25) + (1 + 0.25) + (1 + 0.25) + (1 + 0.25) = 6
+TA: L, S, Stop (2)::(1 + 1)+ (1+1) + (1 + 3 + 3)= 11
+TG: L, S, W, Stop (1) ::(1 + 1)+ (1+0.5) + (1+0.5) + (1+3) =9
+CT: L , P, H, R :: (1 + 0.25) + (1 + 0.25) + (1 + 0.25) + (1 + 0.25) = 5
+CC: L , P, H, R :: (1 + 0.25) + (1 + 0.25) + (1 + 0.25) + (1 + 0.25) = 5
+CA: L , P, Q, R ::(1 + 0.25) + (1 + 0.25) + (1 + 0.50) + (1 + 0.25) = 5.25
+CG: L , P, Q, R ::(1 + 0.25) + (1 + 0.25) + (1 + 0.25) + (1 + 0.25) = 5
+AT: I, T, N, S ::(1 + 1) + (1 + 0.25) + (1 + 0.50) + (1 + 0.25) = 6
+AC: I, T, N, S :: (1 + 1) + (1 + 0.25) + (1 + 0.50) + (1 + 0.25) = 6
+AA: I, T, K, R :: (1 + 1) + (1 + 0.50) + (1 + 0.25) + (1 + 0.25) = 6
+AG: M, T, K, R :: (1 + 0.50) + (1 + 0.50) + (1 + 0.25) + (1 + 0.25) = 5.50
+GT: V, A, D, G :: (1 + 0.25) + (1 + 0.25) + (1 + 1) + (1 + 1) = 6.50
+GC: V, A, D, G :: (1 + 0.25) + (1 + 0.25) + (1 + 1) + (1 + 1) = 6.50
+GA: V, A, E, G :: (1 + 0.25) + (1 + 0.25) + (1 + 1) + (1 + 1) = 6.50
+GG: V, A, E, G :: (1 + 0.25) + (1 + 0.25) + (1 + 1) + (1 + 1) = 6.50
+'''
+
+
+#scores the conservation in the second position
+codon_table_13={
+'TT':6, 'TC':6,'TA': 11,'TG':9, 'CT': 5, 'CC': 5, 'CA':5.25,'CG': 5, 'AT': 6, 'AC': 6, 'AA': 6, 'AG': 5.50, 'GT': 6.50,
+'GC':6.50, 'GA': 6.50, 'GG': 6.50
+}
+
+
+
+'''
+Scoring Function Based on the wobble position
+##IDEA: Return higher scores for lower conservation as CONFIDENCE SCORE is INVERSELY proportional to SUM Returned
+###
+Base case: 3rd position does not matter meaning codes for same aa: Score is given as 1
+            3rd position leads to 2 different aa: Base score as (1 + 1)= 2 with addition penalty for each aa:: [same groups: 0.25, similar chemical:0.5, different: 1]
+            If stop codon, penalty of 3 is added
+###
+1. Lowest penalty is received when the base at the third position does not matter
+TT: F, L, I, V :: (1 + 0.25) + (1 + 0.25) + (1 + 0.25) + (1 + 0.25) = 6
+TC: F, L, I, V :: (1 + 0.25) + (1 + 0.25) + (1 + 0.25) + (1 + 0.25) = 6
+TA: L, I, V::(1 + 0.25)+ (1+0.25) + (1 + 0.25)= 3.75
+TG: L, M, V ::(1 + 0.25)+ (1+0.5) + (1+0.25)  =4
+CT: S, P, T, A :: (1 + 0.25) + (1 + 1) + (1 + 0.25) + (1 + 1) = 6.50
+CC: S, P, T, A :: (1 + 0.25) + (1 + 1) + (1 + 0.25) + (1 + 1) = 6.50
+CA: S, P, T, A :: (1 + 0.25) + (1 + 1) + (1 + 0.25) + (1 + 1) = 6.50
+CG: S, P, T, A :: (1 + 0.25) + (1 + 1) + (1 + 0.25) + (1 + 1) = 6.50
+AT: Y, H, N, D ::(1 + 1) + (1 + 0.50) + (1 + 0.50) + (1 + 0.50) = 6.50
+AC: Y, H, N, D ::(1 + 1) + (1 + 0.50) + (1 + 0.50) + (1 + 0.50) = 6.50
+AA: Stop, Q, K, E :: (1 + 3) + (1 + 0.50) + (1 + 0.25) + (1 + 0.25) = 8
+AG: Stop, Q, K, E :: (1 + 3) + (1 + 0.50) + (1 + 0.25) + (1 + 0.25) = 8
+GT: C, R, S, G :: (1 + 0.50) + (1 + 0.50) + (1 + 0.50) + (1 + 1) = 6.50
+GC: C, R, S, G :: (1 + 0.50) + (1 + 0.50) + (1 + 0.50) + (1 + 1) = 6.50
+GA: Stop, R, G :: (1 + 3) + (1 + 1) + (1 + 1)  = 8.0
+GG: W, R,  G :: (1 + 0.50) + (1 + 1) + (1 + 0.50)  = 5.00
+'''
+
+
+#scores the conservation in the first position
+codon_table_23={
+'TT':6, 'TC':6,'TA': 3.75,'TG':4, 'CT': 6.5, 'CC': 6.5, 'CA':6.5,'CG': 6.5, 'AT': 6.5, 'AC': 6.5, 'AA': 8, 'AG': 8, 'GT': 6.50,
+'GC':6.50, 'GA': 8, 'GG': 5.0
+}
+
 #the dictionary maps the sequence id to its description for phylogenetic trees
 tree_map={}
 
 #ACCESSORIES FUNCTIONS to support the views
 
+#RETURNS a total penalty for the lack of conservation based on the position of the conservation
+def sum_conservation(l_conservation, consensus_seq):
+
+    index_score={}
+
+    for index in l_conservation:
+        position= (index+ 1) %3
+        #if the conservation is lower than 50% in the THIRD position
+        if position==0:
+            #captures the two sequences before the index
+            triplet_12= consensus_seq[index-2:index]
+
+            if triplet_12 in codon_table_12.keys():
+                index_score[index]=codon_table_12[triplet_12]
+            else:
+                index_score[index]=10
+
+        #if the conservation is lower than 50% in the FIRST position
+        if position==1:
+            triplet_23= consensus_seq[index+1:index+3]
+
+
+            if triplet_23 in codon_table_23.keys():
+                index_score[index]=codon_table_23[triplet_23]
+            else:
+                index_score[index]=10
+
+
+        #if the conservation is lower than 50% in the SECOND position
+        if position==2:
+            triplet_13= consensus_seq[index-1] + consensus_seq[index+1]
+
+            if triplet_13 in codon_table_13.keys():
+                index_score[index]=codon_table_13[triplet_13]
+            else:
+                index_score[index]=10
+
+
+    return sum(index_score.values())
 
 #returns a tuple with counts in the order (A, T, C, G,-)
 def countIndBase(col):
@@ -283,6 +428,7 @@ def tree_draw_newick():
 
     consensus_sequence=''
 
+
     #stores the collection of tuple with corresponding counts of A,T,C,G,- for each column in the alignment
     tuple_list=[]
 
@@ -293,6 +439,7 @@ def tree_draw_newick():
     #Stores the value that correspondes to 50%
     half_line= 0.5 * num_row_overlap
     half_line_list= [half_line] * num_col_overlap
+    consensus_sequence_5=""
 
     tuple_to_base=['A','T','C','G','-']
 
@@ -304,27 +451,49 @@ def tree_draw_newick():
         highest_frequency= max(count_tuple)
         index_highest_freq= count_tuple.index(highest_frequency)
 
-        if highest_frequency >=half_line:
-            #if - appears the highest amount of time, add N
-            if index_highest_freq==4:
-                consensus_sequence=consensus_sequence + 'N'
-            else:
-                 consensus_sequence=consensus_sequence + tuple_to_base[index_highest_freq]
+        #if - appears the highest number of times, replace it with N
+        #creates the consensus sequence
+        if index_highest_freq==4:
+            consensus_sequence=consensus_sequence + 'N'
         else:
-            if index_highest_freq==4:
-                consensus_sequence=consensus_sequence + 'N'
-            else:
-                 consensus_sequence=consensus_sequence + tuple_to_base[index_highest_freq]
+             consensus_sequence=consensus_sequence + tuple_to_base[index_highest_freq]
 
+
+        #To understand the behavior of the consensus sequence as the constraints are placed..
+
+        #When constraints is 50%; the highest number of times any nucleotide appears must be greater than half
+        if highest_frequency >=half_line:
+            if index_highest_freq==4:
+                consensus_sequence_5=consensus_sequence_5 + 'N'
+            else:
+                 consensus_sequence_5=consensus_sequence_5 + tuple_to_base[index_highest_freq]
+        else:
+            consensus_sequence_5=consensus_sequence_5 + 'X'
+
+        #stores the highest frequency at column position in the alignment
         max_each_column.append(highest_frequency)
 
-    #indices_X=[pos for pos, char in enumerate(consensus_sequence) if char == 'X']
+    #creates a list with indices where the base is conserved in less than 50% of the sequences
+    indices_X_5=[pos for pos, char in enumerate(consensus_sequence_5) if char == 'X']
+    codon_X_5= [(e+1)%3 for e in indices_X_5 ]
+    #gets frequence of each element as a dictionary. 0: third position, 1: first position, 2: second position
+    counter=collections.Counter(codon_X_5)
+    confidence_score_5=(len(indices_X_5)/sum_conservation(indices_X_5,consensus_sequence)) + (len(consensus_sequence_5)/len(indices_X_5)) +(0.5/len(indices_X_5))
+
+
     '''
-    print consensus_sequence
-    print len(indices_X)
-    print indices_X
-    print [(e+1)%3 for e in indices_X ]
+    Plot the frequence Vs triplet location GRAPH
     '''
+    plt.subplot(1,1,1)
+    x_labels= [x+1 for x in counter.keys()]
+    plt.bar(range(len(counter)), counter.values(), width=0.5,align='center', alpha=0.5)
+    plt.xticks(range(len(counter)), x_labels)
+    plt.ylabel("Frequency")
+    plt.xlabel("Position in the Triplet where conservation is less than 50%")
+    plt.suptitle("Frequency Vs Position in the Triplet where conservation is less than 50% ")
+    plt.savefig("/home/savill88/Desktop/senior-project/PriMSA/django_PriMSA/primsa/static/images/frequency.png", bbox_inches='tight', dpi=250 )
+
+
 
 
     '''
@@ -340,14 +509,10 @@ def tree_draw_newick():
     y_dash= [x[4] for x in tuple_list]
 
     plt.figure(figsize=(15,15))
-    '''
-    plt.subplot(7,1,1)
-    plt.plot(x_val, y_A,'r',x_val, y_T,'b',x_val, y_C,'g',x_val, y_G,'y',x_val, y_dash,'m')
-    plt.title("Graph showing the distribution of the bases in the Multiple Sequence Alignment")
-    plt.ylabel("ATCG- Distribution")
-    '''
+
+    plt.suptitle("Graph showing the distribution of the bases in the Multiple Sequence Alignment")
     plt.subplot(6,1,1)
-    plt.title("Graph showing the distribution of the bases in the Multiple Sequence Alignment")
+
     plt.plot(x_val, y_A,'r')
     plt.ylabel("As")
 
@@ -365,15 +530,15 @@ def tree_draw_newick():
 
     plt.subplot(6,1,5)
     plt.plot(x_val, y_dash,'m')
-    plt.ylabel("- Count ")
+    plt.ylabel("- (Dash) Count ")
 
 
     plt.subplot(6,1,6)
-    plt.plot(x_val, max_each_column,'k', x_val, half_line_list, 'c')
+    plt.plot(x_val, max_each_column,'k', label='_nolegend_')
+    plt.plot( x_val, half_line_list, 'c', label='Frequency at 50% conservation')
     plt.ylabel("Highest Frequency")
-
     plt.xlabel("Alignment Location (Column Number)")
-    #plt.tight_layout()
+    plt.legend(loc="upper right")
 
     plt.savefig("/home/savill88/Desktop/senior-project/PriMSA/django_PriMSA/primsa/static/images/statistics.png", bbox_inches='tight', dpi=150 )
 
@@ -387,31 +552,19 @@ def tree_draw_newick():
 
 
     parsed_results={}
+    left_primer=[results['PRIMER_LEFT_0_SEQUENCE'],round(results['PRIMER_LEFT_0_TM'],2),round(results['PRIMER_LEFT_0_GC_PERCENT'],2), round(results['PRIMER_LEFT_0_END_STABILITY'],2), results['PRIMER_LEFT_0'] ]
+    right_primer=[results['PRIMER_RIGHT_0_SEQUENCE'],round(results['PRIMER_RIGHT_0_TM'],2),round(results['PRIMER_RIGHT_0_GC_PERCENT'],2), round(results['PRIMER_RIGHT_0_END_STABILITY'],2), results['PRIMER_RIGHT_0']]
+    pair_primer=results['PRIMER_PAIR_0_PRODUCT_SIZE']
 
-    primer_left={}
+    parsed_results['Left']= left_primer
+    parsed_results['Right']= right_primer
+    parsed_results['product_size']= int(pair_primer)
+    parsed_results['confidence_score']= confidence_score_5
+    parsed_results['total_X']= len(indices_X_5)
+    parsed_results['total_alignment']= num_col_overlap
 
-    primer_right={}
-
-    primer_left_index=[]
-    primer_right_index=[]
-    primer_pair={}
-    for key in sorted(results.iterkeys()):
-        print "%s: %s" % (key, results[key])
-        if 'PRIMER_LEFT' in key:
-            primer_left[key]=results[key]
-        if 'PRIMER_RIGHT' in key:
-            primer_right[key]=results[key]
-        if 'PRIMER_PAIR' in key:
-            primer_pair[key]=results[key]
-        if key=="PRIMER_LEFT_0":
-            primer_left_index.append(results[key])
-        if key=="PRIMER_RIGHT_0":
-            primer_right_index.append(results[key])
-
-
-    parsed_results['primer_left']= primer_left
-    parsed_results['primer_right']= primer_right
-    parsed_results['primer_pair']= primer_pair
+    primer_left_index=[results['PRIMER_LEFT_0']]
+    primer_right_index=[results['PRIMER_RIGHT_0']]
 
 
 
@@ -444,9 +597,9 @@ def tree_draw_newick():
 
 
     if (primer_right_end_index% 100) < primer_right_index[0][1]:
-        primer_right_line= primer_right_space + '>' * (primer_right_index[0][1] - (primer_right_end_index%100))+"\n\n"
+        primer_right_line= primer_right_space + '<' * (primer_right_index[0][1] - (primer_right_end_index%100))+"\n\n"
     else:
-        primer_right_line= primer_right_space + '>' * primer_right_index[0][1] +"\n\n"
+        primer_right_line= primer_right_space + '<' * primer_right_index[0][1] +"\n\n"
 
 
 
