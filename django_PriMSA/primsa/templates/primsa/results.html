@@ -55,7 +55,12 @@
   <div class="col-lg-12 container-fluid">
 
     <div>
-        <p> <b> CONSENSUS SEQUENCE <b> <br> <br><b>Confidence Score: {{data.confidence_score}}</b> {{confidence_score}} <br> <b> ">>>>>": </b>Left primer
+        <p> <h2 class="text-center text-success"> Primers Aligned with the Consensus Sequences </h2> <br> <br>Confidence Score:<b class="text-success"> {{data.confidence_score}} </b> <br>
+          There were <b class="text-success">{{data.total_X}}</b> positions out of <b class="text-success">{{data.total_alignment}}</b> positions in the alignment with less than 50% conservation .
+          <br>
+          <br>
+
+          <b> ">>>>>": </b>Left primer
         <br> <b>"<<<<<" :</b> Right Primer <br>  </p>
 
 
@@ -65,11 +70,11 @@
     <div>
         <img src="/static/images/frequency.png" class= "img-fluid center-block" alt="primer_image"/>
     </div>
-
     <br>
     <br>
     <hr>
     <br>
+    <h2 class="text-success text-center"> Results from Primer 3 </h2>
     <br>
 
       <div class="table-responsive">
@@ -78,7 +83,7 @@
 
               <tr>
                 <th class="header"> Primer <i class="icon-sort"></i></th>
-                <th class="header"> Sequence<i class="icon-sort"></i></th>
+                <th class="header"> Sequence (5' to 3')<i class="icon-sort"></i></th>
                 <th class="header"> Melting Temperature<i class="icon-sort"></i></th>
                 <th class="header"> GC Percent (%)<i class="icon-sort"></i></th>
                 <th class="header"> End Stability (Delta G)<i class="icon-sort"></i></th>
@@ -92,7 +97,16 @@
 
             {% for key, value in data.items %}
             <tr>
-                {% if key == 'Left' or key=='Right' %}
+                {% if key == "Left"  %}
+                <td>{{key}}</td>
+                <td>{{value.0}}</td>
+                <td>{{value.1}}</td>
+                <td>{{value.2}}</td>
+                <td>{{value.3}}</td>
+                <td>{{value.4}}</td>
+                {% endif %}
+
+                {% if key == "Right"  %}
                 <td>{{key}}</td>
                 <td>{{value.0}}</td>
                 <td>{{value.1}}</td>
@@ -106,10 +120,14 @@
           </tbody>
           </table>
           <br><br>
-          <p class="text-primary"> <b>The product size of the primer pair is: </b> data.product_size
-        </div>
+          <h3> The product size of the primer pair is: <b class="text-success"> {{data.product_size}}</b></h3>
           <hr>
-
+          <br>
+        </div>
+        <br>
+          <hr>
+          <h2 class="text-success text-center"> Multiple Sequence Alignment Viewer </h2>
+          <br>
           <div id='msa_viewer_mRNA'></div>
 
           <script>
@@ -132,6 +150,9 @@
           </script>
 
           <hr>
+          <br>
+          <h2 class="text-success text-center"> Newick Tree </h2>
+          <br>
 
           <div>
               <img src="/static/images/phylotree.png" class= "img-fluid center-block" alt="phylogenetic tree"/>
@@ -139,6 +160,8 @@
 
 
           <hr>
+          <br>
+
           <div>
               <img src="/static/images/statistics.png" class= "img-fluid center-block" alt="statistics"/>
           </div>

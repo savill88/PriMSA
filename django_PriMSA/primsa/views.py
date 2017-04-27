@@ -510,7 +510,7 @@ def tree_draw_newick():
 
     plt.figure(figsize=(15,15))
 
-    plt.suptitle("Graph showing the distribution of the bases in the Multiple Sequence Alignment")
+    plt.suptitle("Graph showing the distribution of the bases in the Multiple Sequence Alignment", fontsize=25)
     plt.subplot(6,1,1)
 
     plt.plot(x_val, y_A,'r')
@@ -559,7 +559,7 @@ def tree_draw_newick():
     parsed_results['Left']= left_primer
     parsed_results['Right']= right_primer
     parsed_results['product_size']= int(pair_primer)
-    parsed_results['confidence_score']= confidence_score_5
+    parsed_results['confidence_score']= round(confidence_score_5,2)
     parsed_results['total_X']= len(indices_X_5)
     parsed_results['total_alignment']= num_col_overlap
 
