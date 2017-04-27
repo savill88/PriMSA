@@ -486,7 +486,7 @@ def tree_draw_newick():
     '''
     plt.subplot(1,1,1)
     x_labels= [x+1 for x in counter.keys()]
-    plt.bar(range(len(counter)), counter.values(), width=0.5,align='center', alpha=0.5)
+    plt.bar(list(reversed(range(len(counter)))), counter.values(), width=0.5,align='center', alpha=0.5)
     plt.xticks(range(len(counter)), x_labels)
     plt.ylabel("Frequency")
     plt.xlabel("Position in the Triplet where conservation is less than 50%")
