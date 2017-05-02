@@ -23,7 +23,7 @@ import collections
 import pylab
 from primer3 import bindings
 
-#TRANSLATION TABLE as Python Dictionary
+#TRANSLATION TABLE stored as Python Dictionary
 codon_table = {
     'ATA':'I', 'ATC':'I', 'ATT':'I', 'ATG':'M',
     'ACA':'T', 'ACC':'T', 'ACG':'T', 'ACT':'T',
@@ -45,7 +45,7 @@ codon_table = {
 
 
 '''
-Scoring Function Based on the wobble position
+Scoring Function that returns a PENALTY SCORE
 ##IDEA: Return higher scores for lower conservation as CONFIDENCE SCORE is INVERSELY proportional to SUM Returned
 ###
 Base case: 3rd position does not matter meaning codes for same aa: Score is given as 1
@@ -71,42 +71,15 @@ GA: D (Electrically Charged), E (Electrically Charged) :: 1+0.25 + 1 + 0.25= 2.5
 GG: G :: 1
 '''
 
-#scores the conservation in the third position
+#penalty score for conservation in the third position
 codon_table_12={
 'TT':2.50, 'TC':1,'TA': 6,'TG':8, 'CT': 1, 'CC': 1, 'CA':3,'CG': 1, 'AT': 4, 'AC': 1, 'AA': 3, 'AG': 3, 'GT': 1,
 'GC':1, 'GA': 2.5, 'GG': 1
 }
 
 
-'''
-Scoring Function Based on the wobble position
-##IDEA: Return higher scores for lower conservation as CONFIDENCE SCORE is INVERSELY proportional to SUM Returned
-###
-Base case: 3rd position does not matter meaning codes for same aa: Score is given as 1
-            3rd position leads to 2 different aa: Base score as (1 + 1)= 2 with addition penalty for each aa:: [same groups: 0.25, similar chemical:0.5, different: 1]
-            If stop codon, penalty of 3 is added
-###
-1. Lowest penalty is received when the base at the third position does not matter
-TT: F, S, Y, C :: (1 + 0.25) + (1 + 0.25) + (1 + 0.25) + (1 + 0.25) = 6
-TC: F, S, Y, C :: (1 + 0.25) + (1 + 0.25) + (1 + 0.25) + (1 + 0.25) = 6
-TA: L, S, Stop (2)::(1 + 1)+ (1+1) + (1 + 3 + 3)= 11
-TG: L, S, W, Stop (1) ::(1 + 1)+ (1+0.5) + (1+0.5) + (1+3) =9
-CT: L , P, H, R :: (1 + 0.25) + (1 + 0.25) + (1 + 0.25) + (1 + 0.25) = 5
-CC: L , P, H, R :: (1 + 0.25) + (1 + 0.25) + (1 + 0.25) + (1 + 0.25) = 5
-CA: L , P, Q, R ::(1 + 0.25) + (1 + 0.25) + (1 + 0.50) + (1 + 0.25) = 5.25
-CG: L , P, Q, R ::(1 + 0.25) + (1 + 0.25) + (1 + 0.25) + (1 + 0.25) = 5
-AT: I, T, N, S ::(1 + 1) + (1 + 0.25) + (1 + 0.50) + (1 + 0.25) = 6
-AC: I, T, N, S :: (1 + 1) + (1 + 0.25) + (1 + 0.50) + (1 + 0.25) = 6
-AA: I, T, K, R :: (1 + 1) + (1 + 0.50) + (1 + 0.25) + (1 + 0.25) = 6
-AG: M, T, K, R :: (1 + 0.50) + (1 + 0.50) + (1 + 0.25) + (1 + 0.25) = 5.50
-GT: V, A, D, G :: (1 + 0.25) + (1 + 0.25) + (1 + 1) + (1 + 1) = 6.50
-GC: V, A, D, G :: (1 + 0.25) + (1 + 0.25) + (1 + 1) + (1 + 1) = 6.50
-GA: V, A, E, G :: (1 + 0.25) + (1 + 0.25) + (1 + 1) + (1 + 1) = 6.50
-GG: V, A, E, G :: (1 + 0.25) + (1 + 0.25) + (1 + 1) + (1 + 1) = 6.50
-'''
 
-
-#scores the conservation in the second position
+#penalty score for conservation in the second position
 codon_table_13={
 'TT':6, 'TC':6,'TA': 11,'TG':9, 'CT': 5, 'CC': 5, 'CA':5.25,'CG': 5, 'AT': 6, 'AC': 6, 'AA': 6, 'AG': 5.50, 'GT': 6.50,
 'GC':6.50, 'GA': 6.50, 'GG': 6.50
@@ -114,35 +87,7 @@ codon_table_13={
 
 
 
-'''
-Scoring Function Based on the wobble position
-##IDEA: Return higher scores for lower conservation as CONFIDENCE SCORE is INVERSELY proportional to SUM Returned
-###
-Base case: 3rd position does not matter meaning codes for same aa: Score is given as 1
-            3rd position leads to 2 different aa: Base score as (1 + 1)= 2 with addition penalty for each aa:: [same groups: 0.25, similar chemical:0.5, different: 1]
-            If stop codon, penalty of 3 is added
-###
-1. Lowest penalty is received when the base at the third position does not matter
-TT: F, L, I, V :: (1 + 0.25) + (1 + 0.25) + (1 + 0.25) + (1 + 0.25) = 6
-TC: F, L, I, V :: (1 + 0.25) + (1 + 0.25) + (1 + 0.25) + (1 + 0.25) = 6
-TA: L, I, V::(1 + 0.25)+ (1+0.25) + (1 + 0.25)= 3.75
-TG: L, M, V ::(1 + 0.25)+ (1+0.5) + (1+0.25)  =4
-CT: S, P, T, A :: (1 + 0.25) + (1 + 1) + (1 + 0.25) + (1 + 1) = 6.50
-CC: S, P, T, A :: (1 + 0.25) + (1 + 1) + (1 + 0.25) + (1 + 1) = 6.50
-CA: S, P, T, A :: (1 + 0.25) + (1 + 1) + (1 + 0.25) + (1 + 1) = 6.50
-CG: S, P, T, A :: (1 + 0.25) + (1 + 1) + (1 + 0.25) + (1 + 1) = 6.50
-AT: Y, H, N, D ::(1 + 1) + (1 + 0.50) + (1 + 0.50) + (1 + 0.50) = 6.50
-AC: Y, H, N, D ::(1 + 1) + (1 + 0.50) + (1 + 0.50) + (1 + 0.50) = 6.50
-AA: Stop, Q, K, E :: (1 + 3) + (1 + 0.50) + (1 + 0.25) + (1 + 0.25) = 8
-AG: Stop, Q, K, E :: (1 + 3) + (1 + 0.50) + (1 + 0.25) + (1 + 0.25) = 8
-GT: C, R, S, G :: (1 + 0.50) + (1 + 0.50) + (1 + 0.50) + (1 + 1) = 6.50
-GC: C, R, S, G :: (1 + 0.50) + (1 + 0.50) + (1 + 0.50) + (1 + 1) = 6.50
-GA: Stop, R, G :: (1 + 3) + (1 + 1) + (1 + 1)  = 8.0
-GG: W, R,  G :: (1 + 0.50) + (1 + 1) + (1 + 0.50)  = 5.00
-'''
-
-
-#scores the conservation in the first position
+#penalty score for conservation in the first position
 codon_table_23={
 'TT':6, 'TC':6,'TA': 3.75,'TG':4, 'CT': 6.5, 'CC': 6.5, 'CA':6.5,'CG': 6.5, 'AT': 6.5, 'AC': 6.5, 'AA': 8, 'AG': 8, 'GT': 6.50,
 'GC':6.50, 'GA': 8, 'GG': 5.0
